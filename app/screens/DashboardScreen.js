@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  Alert,
   Image,
   ScrollView,
   StatusBar,
@@ -8,7 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 import BottomNavWrapper from '../DynamicBottomNav';
@@ -37,6 +36,7 @@ export default function DashboardScreen({ navigation }) {
 
   useEffect(() => {
     fetchCategories();
+    
   }, []);
 
   const fetchCategories = async () => {
@@ -55,12 +55,30 @@ export default function DashboardScreen({ navigation }) {
         }));
         setCategories(formattedCategories);
       } else {
-        Alert.alert('Error', 'Failed to load categories');
+        setAlertConfig({
+  visible: true,
+  title: 'ભૂલ',
+  message: 'શ્રેણીઓ લોડ કરવામાં નિષ્ફળ',
+  buttons: [
+    { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+  ],
+  type: 'error'
+});
+
       }
     } catch (error) {
-      console.error('Error fetching categories:', error);
-      Alert.alert('Error', 'Failed to load categories. Please try again.');
-    } finally {
+  console.error('Error fetching categories:', error);
+  setAlertConfig({
+    visible: true,
+    title: 'ભૂલ',
+    message: 'શ્રેણીઓ લોડ કરવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    buttons: [
+      { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+    ],
+    type: 'error'
+  });
+}
+finally {
       setLoading(false);
     }
   };
@@ -112,7 +130,7 @@ export default function DashboardScreen({ navigation }) {
         ) : (
           <View style={styles.banner}>
             <View style={styles.bannerContent}>
-              <Text style={styles.bannerText}>🛒 સ્થાનિક બજાર!</Text>
+              <Text style={styles.bannerText}>🛒 લોકબજાર!</Text>
               <Text style={styles.bannerSubtext}>
                 તમારી જરૂરિયાત, અમારી સેવા
               </Text>
@@ -322,6 +340,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 10,
+    marginBottom:-200,
   },
   categoryCard: {
     width: '31%',
