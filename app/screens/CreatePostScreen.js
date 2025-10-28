@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import CustomAlert from '../components/CustomeAlert';
 import { apiService } from '../config/api';
 import BottomNavWrapper from '../DynamicBottomNav';
 // Generate light unique colors for categories
@@ -39,7 +40,13 @@ export default function CreatePostScreen({ navigation }) {
   const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
   const [images, setImages] = useState([]);
-
+   const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    buttons: [],
+    type: 'info'
+  });
   // Dynamic fields
   const [year, setYear] = useState('');
   const [kilometers, setKilometers] = useState('');
@@ -99,11 +106,27 @@ export default function CreatePostScreen({ navigation }) {
         }));
         setCategories(formattedCategories);
       } else {
-        Alert.alert('Error', 'Failed to load categories');
+        setAlertConfig({
+          visible: true,
+          title: 'ભૂલ',
+          message: 'શ્રેણીઓ લોડ કરવામાં નિષ્ફળ',
+          buttons: [{ text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }],
+          type: 'error'
+       });
+
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
-      Alert.alert('Error', 'Failed to load categories. Please try again.');
+      setAlertConfig({
+  visible: true,
+  title: 'ભૂલ',
+  message: 'શ્રેણીઓ લોડ કરવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.',
+  buttons: [
+    { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+  ],
+  type: 'error'
+});
+
     } finally {
       setCategoriesLoading(false);
     }
@@ -198,13 +221,31 @@ export default function CreatePostScreen({ navigation }) {
 // Find this function (around line 80) and REPLACE it:
 const handleImagePick = async () => {
   if (images.length >= 4) {
-    Alert.alert('મર્યાદા પૂર્ણ', 'તમે મહત્તમ 4 ફોટો પસંદ કરી શકો છો');
+    setAlertConfig({
+  visible: true,
+  title: 'મર્યાદા પૂર્ણ',
+  message: 'તમે મહત્તમ 4 ફોટો પસંદ કરી શકો છો',
+  buttons: [
+    { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+  ],
+  type: 'warning'
+});
+
     return;
   }
 
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
-    Alert.alert('પરવાનગી જરૂરી', 'કૃપા કરીને ફોટો લાઇબ્રેરી એક્સેસ કરવાની પરવાનગી આપો');
+    setAlertConfig({
+  visible: true,
+  title: 'પરવાનગી જરૂરી',
+  message: 'કૃપા કરીને ફોટો લાઇબ્રેરી એક્સેસ કરવાની પરવાનગી આપો',
+  buttons: [
+    { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+  ],
+  type: 'warning'
+});
+
     return;
   }
 
@@ -235,26 +276,71 @@ const handleImagePick = async () => {
 
   const handleSubmit = async () => {
     // Validation
-    if (!selectedCategory) {
-      Alert.alert('ભૂલ', 'કૃપા કરીને કેટેગરી પસંદ કરો');
-      return;
-    }
-    if (!title) {
-      Alert.alert('ભૂલ', 'કૃપા કરીને શીર્ષક દાખલ કરો');
-      return;
-    }
-    if (!price) {
-      Alert.alert('ભૂલ', 'કૃપા કરીને કિંમત દાખલ કરો');
-      return;
-    }
-    if (!location) {
-      Alert.alert('ભૂલ', 'કૃપા કરીને સ્થળ દાખલ કરો');
-      return;
-    }
-    if (images.length === 0) {
-      Alert.alert('ભૂલ', 'કૃપા કરીને ઓછામાં ઓછો 1 ફોટો ઉમેરો');
-      return;
-    }
+  if (!selectedCategory) {
+  setAlertConfig({
+    visible: true,
+    title: 'ભૂલ',
+    message: 'કૃપા કરીને કેટેગરી પસંદ કરો',
+    buttons: [
+      { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+    ],
+    type: 'warning'
+  });
+  return;
+}
+
+if (!title) {
+  setAlertConfig({
+    visible: true,
+    title: 'ભૂલ',
+    message: 'કૃપા કરીને શીર્ષક દાખલ કરો',
+    buttons: [
+      { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+    ],
+    type: 'warning'
+  });
+  return;
+}
+
+if (!price) {
+  setAlertConfig({
+    visible: true,
+    title: 'ભૂલ',
+    message: 'કૃપા કરીને કિંમત દાખલ કરો',
+    buttons: [
+      { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+    ],
+    type: 'warning'
+  });
+  return;
+}
+
+if (!location) {
+  setAlertConfig({
+    visible: true,
+    title: 'ભૂલ',
+    message: 'કૃપા કરીને સ્થળ દાખલ કરો',
+    buttons: [
+      { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+    ],
+    type: 'warning'
+  });
+  return;
+}
+
+if (images.length === 0) {
+  setAlertConfig({
+    visible: true,
+    title: 'ભૂલ',
+    message: 'કૃપા કરીને ઓછામાં ઓછો 1 ફોટો ઉમેરો',
+    buttons: [
+      { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+    ],
+    type: 'warning'
+  });
+  return;
+}
+
 
     setLoading(true);
 
@@ -264,7 +350,15 @@ const handleImagePick = async () => {
       const userData = JSON.parse(userDataString);
 
       if (!userData) {
-        Alert.alert('ભૂલ', 'કૃપા કરીને ફરી લૉગિન કરો');
+        setAlertConfig({
+  visible: true,
+  title: 'ભૂલ',
+  message: 'કૃપા કરીને ફરી લૉગિન કરો',
+  buttons: [
+    { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+  ],
+  type: 'warning'
+});
         navigation.navigate('Welcome');
         return;
       }
@@ -309,66 +403,96 @@ const handleImagePick = async () => {
             // Clear form after successful post creation
             clearForm();
 
-            Alert.alert(
-              'સફળતા!',
-              `તમારી જાહેરાત અને ${uploadResponse.data.length} ફોટો અપલોડ થયા!`,
-              [
-                {
-                  text: 'ઠીક છે',
-                  onPress: () => {
-                    // Replace navigation to Account (removes CreatePost from stack)
-                    navigation.replace('Account');
-                  }
-                }
-              ]
-            );
+            setAlertConfig({
+  visible: true,
+  title: 'સફળતા!',
+  message: `તમારી જાહેરાત અને ${uploadResponse.data.length} ફોટો સફળતાપૂર્વક અપલોડ થયા!`,
+  buttons: [
+    {
+      text: 'ઠીક છે',
+      onPress: () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+        navigation.replace('Account');
+      }
+    }
+  ],
+  type: 'success'
+});
+
           } else {
             // Post created but images failed
             clearForm();
 
-            Alert.alert(
-              'આંશિક સફળતા',
-              'તમારી જાહેરાત પોસ્ટ થઈ પણ ફોટો અપલોડમાં સમસ્યા',
-              [
-                {
-                  text: 'ઠીક છે',
-                  onPress: () => {
-                    navigation.replace('Account');
-                  }
-                }
-              ]
-            );
+            setAlertConfig({
+  visible: true,
+  title: 'આંશિક સફળતા',
+  message: 'તમારી જાહેરાત પોસ્ટ થઈ પરંતુ ફોટો અપલોડમાં સમસ્યા આવી',
+  buttons: [
+    {
+      text: 'ઠીક છે',
+      onPress: () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+        navigation.replace('Account');
+      }
+    }
+  ],
+  type: 'warning'
+});
+
           }
         } catch (uploadError) {
           console.error('Image upload error:', uploadError);
           clearForm();
 
-          Alert.alert(
-            'આંશિક સફળતા',
-            'તમારી જાહેરાત પોસ્ટ થઈ પણ ફોટો અપલોડમાં સમસ્યા',
-            [
-              {
-                text: 'ઠીક છે',
-                onPress: () => {
-                  navigation.replace('Account');
-                }
-              }
-            ]
-          );
+          setAlertConfig({
+  visible: true,
+  title: 'આંશિક સફળતા',
+  message: 'તમારી જાહેરાત પોસ્ટ થઈ પરંતુ ફોટો અપલોડમાં સમસ્યા આવી',
+  buttons: [
+    {
+      text: 'ઠીક છે',
+      onPress: () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+        navigation.replace('Account');
+      }
+    }
+  ],
+  type: 'warning'
+});
+
         }
       } else {
         Alert.alert('ભૂલ', response.message || 'જાહેરાત પોસ્ટ કરવામાં સમસ્યા');
       }
     } catch (error) {
       if (error.message.includes('લૉગિન')) {
-        Alert.alert('સત્ર સમાપ્ત', error.message, [
-          {
-            text: 'ઠીક છે',
-            onPress: () => navigation.navigate('Welcome')
-          }
-        ]);
+        setAlertConfig({
+  visible: true,
+  title: 'સત્ર સમાપ્ત',
+  message: error.message,
+  buttons: [
+    {
+      text: 'ઠીક છે',
+      onPress: () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+        navigation.navigate('Welcome');
+      }
+    }
+  ],
+  type: 'warning'
+});
+
       } else {
-        Alert.alert('ભૂલ', 'કનેક્શન સમસ્યા. કૃપા કરીને ફરી પ્રયાસ કરો.');
+        setAlertConfig({
+  visible: true,
+  title: 'ભૂલ',
+  message: 'કનેક્શન સમસ્યા. કૃપા કરીને ફરી પ્રયાસ કરો.',
+  buttons: [
+    { text: 'ઠીક છે', onPress: () => setAlertConfig(prev => ({ ...prev, visible: false })) }
+  ],
+  type: 'error'
+});
+
       }
       console.error('Create Post Error:', error);
     } finally {
@@ -646,6 +770,13 @@ const handleImagePick = async () => {
         <View style={{ height: 30 }} />
       </ScrollView>
       <BottomNavWrapper navigation={navigation} activeTab="createPost" />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={alertConfig.buttons}
+        type={alertConfig.type}
+      />
     </View>
   );
 }

@@ -17,6 +17,13 @@ export const API_ENDPOINTS = {
   REGISTER: '/user/auth/register',
   CREATE_POST: '/user/post/create',
   CATEGORY_LIST: '/master/category/list',
+
+    // 👇 Notification APIs
+  NOTIFICATION_LIST: '/Notification',
+  NOTIFICATION_STATS: '/Notification/stats',
+  NOTIFICATION_READ: (id) => `/Notification/${id}/read`,
+  NOTIFICATION_READ_ALL: '/Notification/read-all',
+  NOTIFICATION_DELETE: (id) => `/Notification/${id}`,
 };
 
 const getAuthToken = async () => {
@@ -59,6 +66,7 @@ const authenticatedFetch = async (endpoint, options = {}) => {
   return response;
 };
 
+
 // API Service
 export const apiService = {
   // Send OTP
@@ -78,6 +86,8 @@ export const apiService = {
         }
       );
       const data = await response.json();
+      //const data = await parseJSONSafe(response);
+
       return data;
     } catch (error) {
       console.error('Send OTP Error:', error);
@@ -103,6 +113,7 @@ export const apiService = {
         }
       );
       const data = await response.json();
+
       return data;
     } catch (error) {
       console.error('Verify OTP Error:', error);
@@ -379,6 +390,48 @@ export const apiService = {
     }
   },
 
+  deletePost: async (postId) => {
+  try {
+    console.log('🗑️ Deleting post with ID:', postId);
+
+    const response = await authenticatedFetch(`/user/post/${postId}`, {
+      method: 'DELETE',
+    });
+
+    // Some APIs return 204 (no content), handle safely
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : { success: response.ok };
+
+    console.log('🟢 Delete API response:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Delete Post Error:', error);
+    throw error;
+  }
+  },
+
+  updatePostStatus: async (postId, status) => {
+  try {
+    console.log('🔄 Updating post status:', { postId, status });
+
+    const response = await authenticatedFetch(`/user/post/${postId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : { success: response.ok };
+
+    console.log('🟢 Update Post Status API response:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Update Post Status Error:', error);
+    throw error;
+  }
+  },
+
+
+
   // Search Posts
   searchPosts: async (query, pageNumber = 1, pageSize = 20, sortBy = 'NEWEST') => {
     try {
@@ -564,6 +617,53 @@ export const apiService = {
       throw error;
     }
   },
+
+  getNotifications: async (pageNumber = 1, pageSize = 20) => {
+  try {
+    const response = await authenticatedFetch(
+      `${API_ENDPOINTS.NOTIFICATION_LIST}?PageNumber=${pageNumber}&PageSize=${pageSize}`
+    );
+    return await response.json();
+  } catch (error) {
+    console.error('Get Notifications Error:', error);
+    throw error;
+  }
+},
+
+markAsRead: async (notificationId) => {
+  try {
+    await authenticatedFetch(API_ENDPOINTS.NOTIFICATION_READ(notificationId), {
+      method: 'PUT',
+    });
+  } catch (error) {
+    console.error('Mark As Read Error:', error);
+    throw error;
+  }
+},
+
+markAllAsRead: async () => {
+  try {
+    await authenticatedFetch(API_ENDPOINTS.NOTIFICATION_READ_ALL, {
+      method: 'PUT',
+    });
+  } catch (error) {
+    console.error('Mark All As Read Error:', error);
+    throw error;
+  }
+},
+
+deleteNotification: async (notificationId) => {
+  try {
+    await authenticatedFetch(API_ENDPOINTS.NOTIFICATION_DELETE(notificationId), {
+      method: 'DELETE',
+    });
+  } catch (error) {
+    console.error('Delete Notification Error:', error);
+    throw error;
+  }
+},
+
+
 
 };
 

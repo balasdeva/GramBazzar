@@ -29,6 +29,9 @@ const generateLightColor = (index) => {
   return colors[index % colors.length];
 };
 
+
+
+
 export default function DashboardScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('home');
   const [loading, setLoading] = useState(true);
@@ -106,9 +109,13 @@ finally {
             >
               <Text style={styles.iconText}>❤️</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-              <Text style={styles.iconText}>🔔</Text>
-            </TouchableOpacity>
+            <TouchableOpacity
+  style={styles.iconButton}
+  onPress={() => navigation.navigate('Notifications')}
+>
+  <Text style={styles.iconText}>🔔</Text>
+</TouchableOpacity>
+
           </View>
         </View>
 

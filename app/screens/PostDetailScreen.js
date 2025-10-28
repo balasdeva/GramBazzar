@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -13,14 +13,20 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { apiService } from '../config/api';
-import API_CONFIG from '../config/api';
-import { PostDetailShimmer } from '../components/Shimmer';
 
+import { PostDetailShimmer } from '../components/Shimmer';
+import API_CONFIG, { apiService } from '../config/api';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function PostDetailScreen({ route, navigation }) {
-  const { post: initialPost } = route.params;
+  //const { post: initialPost } = route.params;
+  const initialPost = route?.params?.post;
+
+  if (!initialPost) {
+    console.error('❌ PostDetailScreen: Missing route.params.post');
+    Alert.alert('ભૂલ', 'પોસ્ટ માહિતી ઉપલબ્ધ નથી');
+    return null;
+  }
 
   const [postDetail, setPostDetail] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -366,7 +372,7 @@ export default function PostDetailScreen({ route, navigation }) {
             </View>
           </View>
         </View>
-
+        
         {/* Safety Tips */}
         <View style={styles.safetySection}>
           <Text style={styles.safetyTitle}>🛡️ સલામતી ટિપ્સ</Text>

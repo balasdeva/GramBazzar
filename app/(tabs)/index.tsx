@@ -13,13 +13,17 @@ import PostListingScreen from '../screens/PostListingScreen';
 import UserDetailsScreen from '../screens/UserDetailsScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 
+import EditPostScreen from '../screens/EditPostScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 
 import LocalCardCategoryScreen from '../screens/LocalCardCategoryScreen';
 import LocalCardDetailScreen from '../screens/LocalCardDetailScreen';
 import LocalCardHomeScreen from '../screens/LocalCardHomeScreen';
 import LocalCardSearchScreen from '../screens/LocalCardSearchScreen';
+import NotificationScreen from '../screens/NotificationScreen';
 const Stack = createStackNavigator();
+
+
 
 export default function Index() {
   return (
@@ -56,7 +60,8 @@ export default function Index() {
       <Stack.Screen name="LocalCardHome" component={LocalCardHomeScreen} />
 
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-
+      <Stack.Screen name="EditPost" component={EditPostScreen} />
+      <Stack.Screen name="Notifications" component={NotificationScreen} />
 <Stack.Screen name="LocalCardCategory" component={LocalCardCategoryScreen} />
 <Stack.Screen name="LocalCardDetail" component={LocalCardDetailScreen} />
 <Stack.Screen name="LocalCardSearch" component={LocalCardSearchScreen} />
